@@ -1,6 +1,6 @@
 require 'socket'
 
-class Client
+class FakeClient
   attr_reader :client, :remote_addr
 
   def initialize(host, port)
@@ -40,7 +40,7 @@ def run
   end
   server_host = ARGV[0] || "0.0.0.0" 
   server_port = ARGV[1] || 4491
-  client = Client.new(server_host, server_port)
+  client = FakeClient.new(server_host, server_port)
   client.connect
   puts "Client has connected to #{server_host}:#{server_port}"
   client.send("GET / HTTP/1.0\r\nhai!" )

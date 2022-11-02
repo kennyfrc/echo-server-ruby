@@ -1,6 +1,6 @@
 require 'socket'
 
-class TCPServer
+class FakeTCPServer
   attr_reader :server, :host, :port
 
   def initialize(host = "0.0.0.0", port = 4491)
@@ -26,7 +26,7 @@ class TCPServer
 end
 
 def run
-  server = TCPServer.new
+  server = FakeTCPServer.new
   server.listen
   puts "Server booted. Listening on port #{server.host}:#{server.port}"
   loop do

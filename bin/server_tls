@@ -6,7 +6,7 @@
 require 'socket'
 require 'openssl'
 
-class FakeTCPServer
+class EchoServer
   attr_reader :server, :host, :port
 
   def initialize(host = "0.0.0.0", port = 4491)
@@ -32,7 +32,7 @@ class FakeTCPServer
 end
 
 def run
-  server = FakeTCPServer.new
+  server = EchoServer.new
   server.listen
   puts "Server booted. Listening on port #{server.host}:#{server.port}"
   puts "Press Ctrl+C to exit."

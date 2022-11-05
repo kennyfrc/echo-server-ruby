@@ -1,6 +1,6 @@
 # Echo Server in Ruby
 
-Simple echo server in Ruby. Returns request data to response
+Simple echo server in Ruby. Returns request data to response. Useful for testing.
 
 ## Usage
 

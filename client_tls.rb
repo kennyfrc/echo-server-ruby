@@ -1,34 +1,37 @@
 require 'socket'
+require 'openssl'
 
 class FakeClient
-  attr_reader :client, :remote_addr
+  attr_reader :server, :remote_addr
 
   def initialize(host, port)
-    @client = Socket.new(:INET, :STREAM)
+    @server = Socket.new(:INET, :STREAM)
     @remote_addr = Socket.pack_sockaddr_in(port, host)
-    @client.connect(@remote_addr)
-    @host = host
-    @port = port
+    @server.connect(@remote_addr)
+  end
+
+  def info
+    [server, remote_addr]
   end
 
   def connect
-    client.connect(remote_addr)
+    server.connect(remote_addr)
   end
 
   def close_write
-    client.close_write
+    server.close_write
   end
 
   def send(message)
-    client.write(message)
+    server.write(message)
   end
 
   def read
-    client.read
+    server.read
   end
 
   def recv(maxlen)
-    client.recv(maxlen)
+    server.recv(maxlen)
   end
 
 end
@@ -43,11 +46,13 @@ def run
   end
   server_host = ARGV[0] || "0.0.0.0" 
   server_port = ARGV[1] || 4491
-  client = FakeClient.new(server_host, server_port)
+  server, _ = FakeClient.new(server_host, server_port).info
+  ssl_server = OpenSSL::SSL::SSLSocket.new(server)
+  ssl_server.connect
   puts "Client has connected to #{server_host}:#{server_port}"
-  client.send("GET / HTTP/1.0\r\nhai!" )
-  client.close_write
-  puts "\nServer says: \n#{client.recv(100)}"
+  ssl_server.syswrite("GET / HTTP/1.0\r\nhai!" )
+  ssl_server.sysclose
+  puts "Server says: #{ssl_server.sysread(100)}"
 end
 
 run

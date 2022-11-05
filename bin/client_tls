@@ -1,3 +1,9 @@
+#!/usr/bin/ruby
+# Usage:
+# ./client_tls {host} {port} {message}
+# Default:
+# ./client_tls 0.0.0.0 4491 hai!
+
 require 'socket'
 require 'openssl'
 
@@ -41,16 +47,18 @@ def run
     puts "\r\n============================="
     puts "Using default host and port: 0.0.0.0:4491"
     puts "Pass a host and port as arguments to connect to a different server."
-    puts "Example: ruby client.rb 0.0.0.0:3000"
+    puts "Pass a message as third argument to send a message to the server."
+    puts "Example: ruby client.rb 0.0.0.0:3000 hai!"
     puts "=============================\r\n\r\n"
   end
   server_host = ARGV[0] || "0.0.0.0" 
   server_port = ARGV[1] || 4491
+  client_msg = ARGV[2] || "hai"
   server, _ = FakeClient.new(server_host, server_port).info
   ssl_server = OpenSSL::SSL::SSLSocket.new(server)
   ssl_server.connect
   puts "Client has connected to #{server_host}:#{server_port}"
-  ssl_server.syswrite("GET / HTTP/1.0\r\nhai!" )
+  ssl_server.syswrite("GET / HTTP/1.0\r\n#{client_msg}!" )
   ssl_server.sysclose
   puts "Server says: #{ssl_server.sysread(100)}"
 end

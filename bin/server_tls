@@ -1,3 +1,7 @@
+#!/usr/bin/ruby
+# Usage:
+# ./server_tls
+
 # Add a TLS layer to the server
 require 'socket'
 require 'openssl'
@@ -31,14 +35,15 @@ def run
   server = FakeTCPServer.new
   server.listen
   puts "Server booted. Listening on port #{server.host}:#{server.port}"
+  puts "Press Ctrl+C to exit."
   loop do
     client, addr = server.accept
     ctx = create_ssl_context
     ssl_client = OpenSSL::SSL::SSLSocket.new(client, ctx)
     ssl_client.accept
     puts "Received connection from #{addr.ip_address}:#{addr.ip_port}\r\n"
-    puts "\nClient says:\n#{ssl_client.sysread(100)}"
-    ssl_client.syswrite("HTTP/1.0 200 OK\r\nHello World!\r")
+    client_msg = ssl_client.sysread(100)
+    ssl_client.syswrite("HTTP/1.0 200 OK\r\n#{ssl_client.sysread(100)}\r")
     ssl_client.sysclose
   end
 end
